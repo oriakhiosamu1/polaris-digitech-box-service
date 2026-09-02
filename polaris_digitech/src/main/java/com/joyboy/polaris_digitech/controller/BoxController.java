@@ -31,9 +31,7 @@ public class BoxController {
     // 2. Load a box with items
     @PostMapping("/{txref}/load")
     @Operation(summary = "Load items into a box")
-    public ResponseEntity<BoxResponse> loadBox(
-            @PathVariable String txref,
-            @Valid @RequestBody LoadBoxRequest request) {
+    public ResponseEntity<BoxResponse> loadBox(@PathVariable String txref, @Valid @RequestBody LoadBoxRequest request) {
         BoxResponse response = boxService.loadBox(txref, request);
         return ResponseEntity.ok(response);
     }

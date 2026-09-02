@@ -23,9 +23,11 @@ public class BoxService {
     private final BoxRepository boxRepository;
     private final ItemRepository itemRepository;
 
-    // ==================== 1. CREATE BOX ====================
+    // 1. CREATE BOX
     @Transactional
     public BoxResponse createBox(BoxRequest request) {
+
+        // step 1: Check if a box with the same txref already exists
         if (boxRepository.existsByTxref(request.getTxref())) {
             throw new BusinessException("Box with txref '" + request.getTxref() + "' already exists");
         }
@@ -41,18 +43,18 @@ public class BoxService {
         return mapToBoxResponse(savedBox);
     }
 
-    // ==================== 2. LOAD BOX WITH ITEMS ====================
+    // 2. LOAD BOX WITH ITEMS
     @Transactional
     public BoxResponse loadBox(String txref, LoadBoxRequest request) {
         Box box = boxRepository.findByTxref(txref)
                 .orElseThrow(() -> new ResourceNotFoundException("Box not found with txref: " + txref));
 
-        // Rule 1: Battery must be >= 25% to be in LOADING state
+        // Step 1: Battery must be >= 25% to be in LOADING state
         if (box.getBatteryCapacity() < 25) {
             throw new BusinessException("Cannot load box. Battery level is below 25%");
         }
 
-        // Rule 2: Box must be in IDLE or LOADING state
+        // Step 2: Box must be in IDLE or LOADING state
         if (box.getState() != BoxState.IDLE && box.getState() != BoxState.LOADING) {
             throw new BusinessException("Box cannot be loaded. Current state: " + box.getState());
         }
@@ -65,7 +67,7 @@ public class BoxService {
         int currentWeight = box.getCurrentWeight();
         int totalWeight = currentWeight + newItemsWeight;
 
-        // Rule 3: Prevent overloading
+        // Step 3: Prevent overloading
         if (totalWeight > box.getWeightLimit()) {
             throw new BusinessException(
                     "Cannot load items. Total weight (" + totalWeight + "gr) exceeds weight limit (" + box.getWeightLimit() + "gr)"
@@ -100,7 +102,7 @@ public class BoxService {
         return mapToBoxResponse(updatedBox);
     }
 
-    // ==================== 3. CHECK LOADED ITEMS ====================
+    // 3. CHECK LOADED ITEMS
     @Transactional(readOnly = true)
     public List<ItemResponse> getLoadedItems(String txref) {
         Box box = boxRepository.findByTxref(txref)
@@ -111,7 +113,7 @@ public class BoxService {
                 .collect(Collectors.toList());
     }
 
-    // ==================== 4. CHECK AVAILABLE BOXES FOR LOADING ====================
+    // 4. CHECK AVAILABLE BOXES FOR LOADING
     @Transactional(readOnly = true)
     public List<BoxResponse> getAvailableBoxes() {
         List<BoxState> allowedStates = Arrays.asList(BoxState.IDLE, BoxState.LOADING);
@@ -122,7 +124,7 @@ public class BoxService {
                 .collect(Collectors.toList());
     }
 
-    // ==================== 5. CHECK BATTERY LEVEL ====================
+    // 5. CHECK BATTERY LEVEL
     @Transactional(readOnly = true)
     public BatteryResponse getBatteryLevel(String txref) {
         Box box = boxRepository.findByTxref(txref)
@@ -134,7 +136,7 @@ public class BoxService {
                 .build();
     }
 
-    // ==================== MAPPER METHODS ====================
+    // MAPPER METHODS
     private BoxResponse mapToBoxResponse(Box box) {
         List<ItemResponse> itemResponses = box.getItems().stream()
                 .map(this::mapToItemResponse)
