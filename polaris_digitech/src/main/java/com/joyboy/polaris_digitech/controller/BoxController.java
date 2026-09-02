@@ -59,4 +59,28 @@ public class BoxController {
         BatteryResponse response = boxService.getBatteryLevel(txref);
         return ResponseEntity.ok(response);
     }
+
+    // 6. Remove specific items from a box
+    @PatchMapping("/{txref}/items")
+    @Operation(summary = "Remove specific items from a box by item code")
+    public ResponseEntity<BoxResponse> removeItems(@PathVariable String txref, @Valid @RequestBody BoxUpdateRequest request) {
+        BoxResponse response = boxService.removeItems(txref, request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 7. Remove all items from a box
+    @DeleteMapping("/{txref}/items")
+    @Operation(summary = "Remove all items from a box")
+    public ResponseEntity<BoxResponse> removeAllItems(@PathVariable String txref) {
+        BoxResponse response = boxService.removeAllItems(txref);
+        return ResponseEntity.ok(response);
+    }
+
+    // 8. Delete a box
+    @DeleteMapping("/{txref}")
+    @Operation(summary = "Delete a box")
+    public ResponseEntity<Void> deleteBox(@PathVariable String txref) {
+        boxService.deleteBox(txref);
+        return ResponseEntity.noContent().build();
+    }
 }

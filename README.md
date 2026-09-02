@@ -48,9 +48,13 @@ A REST API service for managing delivery boxes that can carry and deliver small 
 ```
 
 ## How to Run
+By default, the application uses MySQL as the database. To run the application with MySQL, just click the run button in your IDE or use the following command:
 
 ```bash
-./mvnw spring-boot:run
+./mvnw spring-boot:run (for MySQL database)
+```
+```bash
+mvn spring-boot:run "-Dspring-boot.run.profiles=h2" (for in-memory H2 database)
 ```
 
 ## How to Test
