@@ -36,6 +36,41 @@ A REST API service for managing delivery boxes that can carry and deliver small 
 1. Make sure MySQL is running.
 2. Update the database credentials in `src/main/resources/application.properties`:
 
-```properties
-spring.datasource.username=root
-spring.datasource.password=
+   ```properties
+   spring.datasource.username=root
+   spring.datasource.password=
+   ```
+
+## How to Build
+
+```bash
+./mvnw clean install
+```
+
+## How to Run
+
+```bash
+./mvnw spring-boot:run
+```
+
+## How to Test
+
+```bash
+./mvnw test
+```
+
+## API Documentation (Swagger)
+Once the app is running, visit http://localhost:8080/swagger-ui.html 
+
+## API Endpoints
+
+| Method | Endpoint                 | Description                     |
+|--------|--------------------------|---------------------------------|
+| POST   | /api/boxes               | Create a new box                |
+| POST   | /api/boxes/{id}/load     | Load a box with items           |
+| GET   | /api/boxes/{txref}/items | Get loaded items of a box       |
+| GET   | /api/boxes/available     | Get boxes available for loading |
+| GET   | /api/boxes/{txref}/batter | Get battery level of a box      |
+
+## Preloaded Data
+On first startup, the application loads 5 sample boxes
